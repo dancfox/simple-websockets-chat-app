@@ -22,25 +22,27 @@ exports.handler = async event => {
   });
   
   const postData = JSON.parse(event.body).data;
-  
-  const postCalls = connectionData.Items.map(async ({ connectionId }) => {
-    try {
-      await apigwManagementApi.postToConnection({ ConnectionId: connectionId, Data: postData }).promise();
-    } catch (e) {
-      if (e.statusCode === 410) {
-        console.log(`Found stale connection, deleting ${connectionId}`);
-        await ddb.delete({ TableName: TABLE_NAME, Key: { connectionId } }).promise();
-      } else {
-        throw e;
-      }
-    }
-  });
-  
-  try {
-    await Promise.all(postCalls);
-  } catch (e) {
-    return { statusCode: 500, body: e.stack };
-  }
 
+  if(postData != "nosend") {
+    
+    const postCalls = connectionData.Items.map(async ({ connectionId }) => {
+      try {
+        await apigwManagementApi.postToConnection({ ConnectionId: connectionId, Data: postData + " right back atcha!" }).promise();
+      } catch (e) {
+        if (e.statusCode === 410) {
+          console.log(`Found stale connection, deleting ${connectionId}`);
+          await ddb.delete({ TableName: TABLE_NAME, Key: { connectionId } }).promise();
+        } else {
+          throw e;
+        }
+      }
+    });
+  
+    try {
+      await Promise.all(postCalls);
+    } catch (e) {
+      return { statusCode: 500, body: e.stack };
+    }
+  }
   return { statusCode: 200, body: 'Data sent.' };
 };
