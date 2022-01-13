@@ -51,8 +51,14 @@ $ wscat -c wss://{YOUR-API-ID}.execute-api.{YOUR-REGION}.amazonaws.com/{STAGE}
 $ wscat -c wss://{YOUR-API-ID}.execute-api.{YOUR-REGION}.amazonaws.com/prod
 connected (press CTRL+C to quit)
 > {"action":"sendmessage", "data":"hello world"}
-< hello world
+< hello world right back atcha!
 ```
+5. To test the sendMessage function without a callback, send the following JSON message:
+``` bash
+> {"action":"sendmessage", "data":"nosend"}
+```
+
+When the "data" element contains "nosend" you should not receive a callback on the websocket.
 
 ## License Summary
 
